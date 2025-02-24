@@ -1,0 +1,10 @@
+.example td, .example th {
+  border: solid;
+}
+.example div{
+  max-width: 256px;
+  padding: 16px;
+  overflow-x: auto;
+  white-space: nowrap;
+  border-collapse: collapse;
+}

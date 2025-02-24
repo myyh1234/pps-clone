@@ -1,0 +1,49 @@
+.main {
+    margin: 0 48px;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-item{
+    display: inline-block;
+    padding-right: 48px;
+    font-weight: bold;
+}
+
+.nav-item:hover {
+    text-decoration: underline;
+}
+
+.nav-ul{
+    display: inline-block;
+    padding: 0;
+}
+
+.small-link-container {
+    display: flex;
+    /* align-items: center; */
+    padding: 24px;
+}
+
+.small-link {
+    display: inline-block;
+    font-size: small;
+    font-weight: normal;
+    color: gray;
+    padding: 8px;
+}
+
+.small-link:hover{
+    color: black;
+    /* font-weight: bold; */
+    text-decoration: underline;
+}
