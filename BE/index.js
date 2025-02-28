@@ -21,7 +21,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     // secure: true, // HTTPS 일 때 활성화
-    maxAge: 1000 * 60 * 60, // 쿠키 만료 시간(예: 1시간)
+    maxAge: 1000 * 60 * 10, // 쿠키 만료 시간
   }
 }))
 
@@ -41,7 +41,7 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ error: '비밀번호 틀림' })
 
     req.session.username = username
-    res.json({ message: '로그인 성공', username })
+    res.json({ message: '로그인 성공', username, maxAge: req.session.cookie.expires })
   }
   catch (err) {
     console.error(err);
@@ -66,14 +66,14 @@ app.post('/signup', async (req, res) => {
 })
 
 app.get('/logincheck', (req, res) => {
-  if (req.session.username) res.json({ isLoggedIn: true, username: req.session.username })
-  else res.json({ isLoggedIn: false })
+  if (!req.session.username) return res.json({ isLoggedIn: false })
+  
 })
 
 app.get('/logout', (req, res) => {
   if (req.session.username) {
     req.session.destroy((err) => {
-      if (err){
+      if (err) {
         console.error(err);
         return res.status(500).json({ error: 'Logout failed' });
       }
@@ -81,6 +81,28 @@ app.get('/logout', (req, res) => {
       res.clearCookie('connect.sid')
       res.json({ message: 'Logout successful' });
     })
+  }
+  else {
+    res.status(401).json({ error: '로그인되어있지 않음' })
+  }
+})
+
+app.post('/modifyPassword', async (req, res) => {
+  if (!req.session.username) 
+    return res.status(401).json({ error: '로그인되어있지 않음', isLoggedIn: false })
+  try {
+    const { newPassword } = req.body
+    await User.update(
+      { password: newPassword }, 
+      { where: 
+        { username: req.session.username }
+      }
+    )
+    res.status(200).json({ message: '비밀번호 수정 성공' })
+  }
+  catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: '비밀번호 수정 실패' });
   }
 })
 

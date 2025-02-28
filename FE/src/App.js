@@ -1,41 +1,46 @@
-import { Outlet, Link } from 'react-router';
-import { useEffect, useState } from 'react'
-import { getAccountInfo, logout } from './Login';
+import { Outlet, Link, useNavigate } from 'react-router';
+import { useContext, useState } from 'react'
+import { getAccountInfo, logout, LoginContext } from './Login';
 import './App.css';
 
 export default function App() {
+  const [loginState, setLoginState] = useState(null)
+
+  const accountInfo = getAccountInfo()
+  if (accountInfo.isLoggedIn && !loginState){
+    setLoginState(accountInfo.username)
+  }
+  // return <div>ㅁㄴㅇㄹ</div>
+
+  function setLogin(accountInfo) {
+    console.log(accountInfo)
+    localStorage.setItem("PPSACCOUNT", JSON.stringify(accountInfo))
+    setLoginState(accountInfo.username)
+  }
+
+  function setLogout() {
+    localStorage.removeItem("PPSACCOUNT")
+    setLoginState(null)
+  }
+  
   const navbar = [
     {name : "홈", url: "/", id: 0},
     {name : "문제", url : "/problemset", id : 1},
     {name : "문제 저장소", url : "/repositoryset", id : 2}
   ];
   return (
-    <div className='main'>
-      <NavBar content={navbar}/>
-      <Outlet />
-    </div>
+    <LoginContext.Provider value={{ loginState, setLogin, setLogout }}>
+      <div className='main'>
+        <NavBar content={navbar}/>
+        <Outlet />
+      </div>
+    </LoginContext.Provider>
   );
 }
 
 function NavBar({ content }){
-  const [account, setAccount] = useState(null)
-  useEffect(() => {
-    try{
-      async function updateAccount(){
-        const result = await getAccountInfo()
-        
-        if (result.isLoggedIn)
-          setAccount(result.username)
-        else
-          setAccount(null)
-      }
-      updateAccount()
-    }
-    catch (err) {
-      console.log(err)
-      setAccount(null)
-    }
-  }, [])
+  const { loginState, setLogout } = useContext(LoginContext)
+  const navigate = useNavigate()
 
   const ContentList = content.map(({name, url, id}) => 
     <li key={id} className="nav-item">
@@ -43,13 +48,13 @@ function NavBar({ content }){
     </li>
   );
   
-  const innerSmallLinks = account ? (
+  const innerSmallLinks = loginState ? (
     <>
-      <Link to={'/user/' + account} className="small-link">{account}</Link>
+      <Link to={'/user/' + loginState} className="small-link">{loginState}</Link>
       {' '}
-      <Link to='/mypage' className="small-link">계정 설정</Link>
+      <Link to='/account' className="small-link">계정 설정</Link>
       {' '}
-      <a href='/' onClick={logout} className="small-link">로그아웃</a>
+      <a href='/' onClick={() => logout(setLogout, navigate)} className="small-link">로그아웃</a>
     </>
   ) : (
     <>

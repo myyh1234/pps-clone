@@ -6,8 +6,10 @@ import ProblemSet from './ProblemSet';
 import ProblemPage from './ProblemPage';
 import Login from './Login';
 import Signup from './Signup';
+import AccountPage from './AccountPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <BrowserRouter>
     <Routes>
@@ -17,6 +19,7 @@ root.render(
         <Route path="problem/:id" element={<ProblemPage />} />
         <Route path='login' element={<Login />} />
         <Route path='signup' element={<Signup />} />
+        <Route path='account' element={<AccountPage />} />
       </Route>
     </Routes>
   </BrowserRouter>
